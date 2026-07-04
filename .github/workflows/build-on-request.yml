@@ -32,6 +32,12 @@ jobs:
         if not exist C:\vcpkg-otc\vcpkg.exe exit /b 1
         .\vcpkg.exe version
 
+    - name: Neutralize pkgconfig fixup (dead msys2 mirrors)
+      shell: pwsh
+      run: |
+        Set-Content -Path C:\vcpkg-otc\scripts\cmake\vcpkg_fixup_pkgconfig.cmake -Value "function(vcpkg_fixup_pkgconfig)`nendfunction()"
+        Get-Content C:\vcpkg-otc\scripts\cmake\vcpkg_fixup_pkgconfig.cmake
+
     - name: Pre-seed vcpkg downloads (fix dead mirrors)
       shell: cmd
       run: |
