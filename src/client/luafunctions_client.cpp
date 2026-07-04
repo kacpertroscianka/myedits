@@ -499,6 +499,10 @@ void Client::registerLuaFunctions()
     g_lua.registerClass<Creature, Thing>();
     g_lua.bindClassStaticFunction<Creature>("create", []{ return CreaturePtr(new Creature); });
     g_lua.bindClassMemberFunction<Creature>("getId", &Creature::getId);
+    g_lua.bindClassMemberFunction<Creature>("setDrawOffset", &Creature::setDrawOffset);
+    g_lua.bindClassMemberFunction<Creature>("getDrawOffset", &Creature::getDrawOffset);
+    g_lua.bindClassMemberFunction<Creature>("setOutfitShader", &Creature::setOutfitShader);
+    g_lua.bindClassMemberFunction<Creature>("getOutfitShader", &Creature::getOutfitShader);
     g_lua.bindClassMemberFunction<Creature>("getName", &Creature::getName);
     g_lua.bindClassMemberFunction<Creature>("setName", &Creature::setName);
     g_lua.bindClassMemberFunction<Creature>("setManaPercent", &LocalPlayer::setManaPercent);
