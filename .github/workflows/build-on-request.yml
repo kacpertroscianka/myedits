@@ -16,15 +16,50 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
 
-    - name: Setup vcpkg and install dependencies
+    - name: Clone vcpkg (pinned)
       shell: cmd
       run: |
-        git clone https://github.com/microsoft/vcpkg C:\vcpkg-otc
-        cd /d C:\vcpkg-otc
-        git checkout 2022.05.10
-        call .\bootstrap-vcpkg.bat
-        .\vcpkg.exe install boost-iostreams:x86-windows-static boost-asio:x86-windows-static boost-beast:x86-windows-static boost-system:x86-windows-static boost-variant:x86-windows-static boost-lockfree:x86-windows-static boost-process:x86-windows-static boost-program-options:x86-windows-static boost-uuid:x86-windows-static boost-filesystem:x86-windows-static luajit:x86-windows-static glew:x86-windows-static physfs:x86-windows-static openal-soft:x86-windows-static libogg:x86-windows-static libvorbis:x86-windows-static zlib:x86-windows-static libzip:x86-windows-static bzip2:x86-windows-static openssl:x86-windows-static
-        .\vcpkg.exe integrate install
+        git clone https://github.com/microsoft/vcpkg C:\vcpkg-otc || exit /b 1
+        cd /d C:\vcpkg-otc || exit /b 1
+        git checkout 2022.05.10 || exit /b 1
+        git log -1 --oneline
+
+    - name: Bootstrap vcpkg
+      shell: cmd
+      run: |
+        cd /d C:\vcpkg-otc || exit /b 1
+        call .\bootstrap-vcpkg.bat || exit /b 1
+        if not exist C:\vcpkg-otc\vcpkg.exe exit /b 1
+        .\vcpkg.exe version
+
+    - name: Pre-seed vcpkg downloads (fix dead mirrors)
+      shell: cmd
+      run: |
+        if not exist C:\vcpkg-otc\downloads mkdir C:\vcpkg-otc\downloads
+        curl -L --fail -o C:\vcpkg-otc\downloads\7z2107-extra.7z https://github.com/ip7z/7zip/releases/download/21.07/7z2107-extra.7z || exit /b 1
+        dir C:\vcpkg-otc\downloads
+
+    - name: Install dependencies
+      shell: cmd
+      run: |
+        cd /d C:\vcpkg-otc || exit /b 1
+        .\vcpkg.exe install boost-iostreams:x86-windows-static boost-asio:x86-windows-static boost-beast:x86-windows-static boost-system:x86-windows-static boost-variant:x86-windows-static boost-lockfree:x86-windows-static boost-process:x86-windows-static boost-program-options:x86-windows-static boost-uuid:x86-windows-static boost-filesystem:x86-windows-static luajit:x86-windows-static glew:x86-windows-static physfs:x86-windows-static openal-soft:x86-windows-static libogg:x86-windows-static libvorbis:x86-windows-static zlib:x86-windows-static libzip:x86-windows-static bzip2:x86-windows-static openssl:x86-windows-static || exit /b 1
+
+    - name: Verify installed headers
+      shell: cmd
+      run: |
+        if not exist "C:\vcpkg-otc\installed\x86-windows-static\include\boost\system\config.hpp" (
+          echo BLAD: brak naglowkow boost po instalacji!
+          dir C:\vcpkg-otc\installed\x86-windows-static\include 2>nul
+          exit /b 1
+        )
+        echo Naglowki boost OK
+
+    - name: Integrate vcpkg
+      shell: cmd
+      run: |
+        cd /d C:\vcpkg-otc || exit /b 1
+        .\vcpkg.exe integrate install || exit /b 1
 
     - name: Compile otclient_gl
       timeout-minutes: 30
