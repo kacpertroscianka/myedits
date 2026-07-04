@@ -246,6 +246,7 @@ protected:
     Color m_informationColor;
     bool m_useCustomInformationColor = false;
     Point m_informationOffset;
+    Point m_drawOffset;
     Color m_outfitColor;
     ScheduledEventPtr m_outfitColorUpdateEvent;
     Timer m_outfitColorTimer;
