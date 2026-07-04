@@ -20,11 +20,11 @@ jobs:
       shell: cmd
       run: |
         git clone https://github.com/microsoft/vcpkg C:\vcpkg-otc
-        cd C:\vcpkg-otc
+        cd /d C:\vcpkg-otc
         git checkout 2022.05.10
-        call bootstrap-vcpkg.bat
-        vcpkg install boost-iostreams:x86-windows-static boost-asio:x86-windows-static boost-beast:x86-windows-static boost-system:x86-windows-static boost-variant:x86-windows-static boost-lockfree:x86-windows-static boost-process:x86-windows-static boost-program-options:x86-windows-static boost-uuid:x86-windows-static boost-filesystem:x86-windows-static luajit:x86-windows-static glew:x86-windows-static physfs:x86-windows-static openal-soft:x86-windows-static libogg:x86-windows-static libvorbis:x86-windows-static zlib:x86-windows-static libzip:x86-windows-static bzip2:x86-windows-static openssl:x86-windows-static
-        vcpkg integrate install
+        call .\bootstrap-vcpkg.bat
+        .\vcpkg.exe install boost-iostreams:x86-windows-static boost-asio:x86-windows-static boost-beast:x86-windows-static boost-system:x86-windows-static boost-variant:x86-windows-static boost-lockfree:x86-windows-static boost-process:x86-windows-static boost-program-options:x86-windows-static boost-uuid:x86-windows-static boost-filesystem:x86-windows-static luajit:x86-windows-static glew:x86-windows-static physfs:x86-windows-static openal-soft:x86-windows-static libogg:x86-windows-static libvorbis:x86-windows-static zlib:x86-windows-static libzip:x86-windows-static bzip2:x86-windows-static openssl:x86-windows-static
+        .\vcpkg.exe integrate install
 
     - name: Compile otclient_gl
       timeout-minutes: 30
