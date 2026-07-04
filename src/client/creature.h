@@ -87,6 +87,10 @@ public:
 
     Point getInformationOffset() { return m_informationOffset; }
     void setInformationOffset(int x, int y) { m_informationOffset = Point(x, y); }
+    Point getDrawOffset() { return m_drawOffset; }
+    void setDrawOffset(int x, int y) { m_drawOffset = Point(x, y); }
+    void setOutfitShader(const std::string& shader) { m_outfit.setShader(shader); }
+    std::string getOutfitShader() { return m_outfit.getShader(); }
 
     void setText(const std::string& text, const Color& color);
     std::string getText();
