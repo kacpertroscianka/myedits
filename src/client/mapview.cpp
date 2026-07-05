@@ -171,55 +171,47 @@ void MapView::drawFloor(short floor, const Position& cameraPosition, const TileP
         }
     }
 
-    if (g_game.getFeature(Otc::GameMapDrawGroundFirst)) {
-        // ground
-        for (auto& tile : tiles) {
-            Point tileDrawPos = transformPositionTo2D(tile->getPosition(), cameraPosition);
-            tile->drawGround(tileDrawPos, m_lightView.get());
-        }
-        // bottom, creatures, top
-        for (auto& tile : tiles) {
-            Point tileDrawPos = transformPositionTo2D(tile->getPosition(), cameraPosition);
+// ground
+for (auto& tile : tiles) {
+    Point tileDrawPos = transformPositionTo2D(tile->getPosition(), cameraPosition);
 
-            tile->drawBottom(tileDrawPos, m_lightView.get());
-
-            if (m_crosshair && tile == crosshairTile) {
-                g_drawQueue->addTexturedRect(Rect(tileDrawPos, tileDrawPos + g_sprites.spriteSize() - 1),
-                                             m_crosshair, Rect(0, 0, m_crosshair->getSize()));
-            }
-
-            tile->drawCreatures(tileDrawPos, m_lightView.get());
-            tile->drawTop(tileDrawPos, m_lightView.get());
-        }
-    } else {
-        // ground, bottom, creatures, top
-        for (auto& tile : tiles) {
-            Point tileDrawPos = transformPositionTo2D(tile->getPosition(), cameraPosition);
-
-            if (m_lightView) {
-                ItemPtr ground = tile->getGround();
-                if (ground && ground->isGround() && !ground->isTranslucent()) {
-                    m_lightView->setFieldBrightness(tileDrawPos, lightFloorStart, 0);
-                }
-            }
-
-            tile->drawGround(tileDrawPos, m_lightView.get());
-
-            tile->drawBottom(tileDrawPos, m_lightView.get());
-
-            if (m_crosshair && tile == crosshairTile) {
-                g_drawQueue->addTexturedRect(Rect(tileDrawPos, tileDrawPos + g_sprites.spriteSize() - 1),
-                                             m_crosshair, Rect(0, 0, m_crosshair->getSize()));
-            }
-
-            tile->drawCreatures(tileDrawPos, m_lightView.get());
-            tile->drawTop(tileDrawPos, m_lightView.get());
+    if (m_lightView) {
+        ItemPtr ground = tile->getGround();
+        if (ground && ground->isGround() && !ground->isTranslucent()) {
+            m_lightView->setFieldBrightness(tileDrawPos, lightFloorStart, 0);
         }
     }
 
-    for (const MissilePtr& missile : g_map.getFloorMissiles(floor)) {
-        missile->draw(transformPositionTo2D(missile->getPosition(), cameraPosition), true, m_lightView.get());
+    tile->drawGround(tileDrawPos, m_lightView.get());
+}
+
+// bottom + crosshair
+for (auto& tile : tiles) {
+    Point tileDrawPos = transformPositionTo2D(tile->getPosition(), cameraPosition);
+
+    tile->drawBottom(tileDrawPos, m_lightView.get());
+
+    if (m_crosshair && tile == crosshairTile) {
+        g_drawQueue->addTexturedRect(
+            Rect(tileDrawPos, tileDrawPos + g_sprites.spriteSize() - 1),
+            m_crosshair,
+            Rect(0, 0, m_crosshair->getSize())
+        );
     }
+}
+
+// creatures
+for (auto& tile : tiles) {
+    Point tileDrawPos = transformPositionTo2D(tile->getPosition(), cameraPosition);
+
+    tile->drawCreatures(tileDrawPos, m_lightView.get());
+}
+
+// top
+for (auto& tile : tiles) {
+    Point tileDrawPos = transformPositionTo2D(tile->getPosition(), cameraPosition);
+
+    tile->drawTop(tileDrawPos, m_lightView.get());
 }
 
 
