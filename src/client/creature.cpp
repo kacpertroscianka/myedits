@@ -103,8 +103,9 @@ void Creature::draw(const Point& dest, bool animate, LightView* lightView)
         animationOffset -= getDisplacement();
 
     size_t drawQueueSize = g_drawQueue->size();
-	m_outfit.draw(dest - jumpOffset + animationOffset, m_walking ? m_walkDirection : m_direction, m_walkAnimationPhase, true, lightView);        
-	g_drawQueue->setMark(drawQueueSize, updatedMarkedColor());
+    m_outfit.draw(dest - jumpOffset + animationOffset, m_walking ? m_walkDirection : m_direction, m_walkAnimationPhase, true, lightView);
+    if (m_marked) {
+        g_drawQueue->setMark(drawQueueSize, updatedMarkedColor());
     }
 
     drawTopWidgets(creatureCenter, m_walking ? m_walkDirection : m_direction);
