@@ -275,7 +275,7 @@ void Outfit::draw(Point dest, Otc::Direction direction, uint walkAnimationPhase,
         }
         drawWings();
     }
-
+    dest += m_drawOffset; // custom: przesuwa tylko cialo outfitu (wings/aura/mount zostaja)
     Point center;
     for (int yPattern = 0; yPattern < type->getNumPatternY(); yPattern++) {
         if (yPattern > 0 && !(getAddons() & (1 << (yPattern - 1)))) {
