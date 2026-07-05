@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Workflow version marker
-      run: echo "=== WORKFLOW v9 ==="
+      run: echo "=== WORKFLOW v10 ==="
       shell: cmd
 
     - name: Checkout
@@ -41,7 +41,7 @@ jobs:
     - name: Force v143 toolset in triplet (runner has only VS2022)
       shell: pwsh
       run: |
-        Add-Content -Path C:\vcpkg-otc\triplets\community\x86-windows-static.cmake -Value "set(VCPKG_PLATFORM_TOOLSET v143)"
+        Add-Content -Path C:\vcpkg-otc\triplets\community\x86-windows-static.cmake -Value "`r`nset(VCPKG_PLATFORM_TOOLSET v143)"
         Get-Content C:\vcpkg-otc\triplets\community\x86-windows-static.cmake
 
     - name: Neutralize pkgconfig fixup (dead msys2 mirrors)
