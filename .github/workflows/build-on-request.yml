@@ -10,6 +10,10 @@ jobs:
       CMAKE_POLICY_VERSION_MINIMUM: "3.5"
 
     steps:
+    - name: Workflow version marker
+      run: echo "=== WORKFLOW v9 ==="
+      shell: cmd
+
     - name: Checkout
       uses: actions/checkout@v4
       with:
@@ -34,6 +38,12 @@ jobs:
         if not exist C:\vcpkg-otc\vcpkg.exe exit /b 1
         .\vcpkg.exe version
 
+    - name: Force v143 toolset in triplet (runner has only VS2022)
+      shell: pwsh
+      run: |
+        Add-Content -Path C:\vcpkg-otc\triplets\community\x86-windows-static.cmake -Value "set(VCPKG_PLATFORM_TOOLSET v143)"
+        Get-Content C:\vcpkg-otc\triplets\community\x86-windows-static.cmake
+
     - name: Neutralize pkgconfig fixup (dead msys2 mirrors)
       shell: pwsh
       run: |
@@ -57,6 +67,14 @@ jobs:
             }
           }
         }
+        # twarda weryfikacja najwazniejszego portu
+        $check = Get-Content "C:\vcpkg-otc\ports\openal-soft\portfile.cmake" -Raw
+        if ($check -notmatch 'CMAKE_POLICY_VERSION_MINIMUM') {
+          Write-Error "openal-soft NIE zostal zalatany - przerywam"
+          exit 1
+        }
+        Write-Host "--- openal-soft portfile (fragment) ---"
+        Select-String -Path "C:\vcpkg-otc\ports\openal-soft\portfile.cmake" -Pattern 'OPTIONS','POLICY' -Context 0,1 | ForEach-Object { $_.Line }
 
     - name: Pre-seed vcpkg downloads (fix dead mirrors)
       shell: cmd
