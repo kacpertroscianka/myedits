@@ -276,43 +276,83 @@ void Outfit::draw(Point dest, Otc::Direction direction, uint walkAnimationPhase,
         drawWings();
     }
 
-    dest += m_drawOffset; // custom: przesuwa tylko cialo outfitu (wings/aura/mount zostaja)
-    Point center;
-    for (int yPattern = 0; yPattern < type->getNumPatternY(); yPattern++) {
-        if (yPattern > 0 && !(getAddons() & (1 << (yPattern - 1)))) {
-            continue;
-        }
+Point bodyDest = dest + m_drawOffset;
+Point center;
 
-        if (type->getLayers() <= 1) {
-            if (!m_shader.empty()) {
-                std::shared_ptr<DrawOutfitParams> outfitParams = type->drawOutfit(dest, 0, direction, yPattern, zPattern, animationPhase, Color::white, lightView);
-                if (!outfitParams)
-                    continue;
-                if (yPattern == 0)
-                    center = outfitParams->dest.center();
-                DrawQueueItemTexturedRect* outfit = new DrawQueueItemOutfitWithShader(outfitParams->dest, outfitParams->texture, outfitParams->src, outfitParams->offset, center, 0, m_shader, m_center);
-                g_drawQueue->add(outfit);
+for (int yPattern = 0; yPattern < type->getNumPatternY(); yPattern++) {
+    if (yPattern > 0 && !(getAddons() & (1 << (yPattern - 1)))) {
+        continue;
+    }
+
+    if (type->getLayers() <= 1) {
+        if (!m_shader.empty()) {
+            std::shared_ptr<DrawOutfitParams> outfitParams =
+                type->drawOutfit(bodyDest, 0, direction, yPattern, zPattern, animationPhase, Color::white, lightView);
+
+            if (!outfitParams)
                 continue;
-            }
-            type->draw(dest, 0, direction, yPattern, zPattern, animationPhase, Color::white, lightView);
-            continue;
-        }
 
-        uint32_t colors = m_head + (m_body << 8) + (m_legs << 16) + (m_feet << 24);
-        std::shared_ptr<DrawOutfitParams> outfitParams = type->drawOutfit(dest, 1, direction, yPattern, zPattern, animationPhase, Color::white, lightView);
-        if (!outfitParams)
-            continue;
-
-        DrawQueueItemTexturedRect* outfit = nullptr;
-        if (m_shader.empty())
-            outfit = new DrawQueueItemOutfit(outfitParams->dest, outfitParams->texture, outfitParams->src, outfitParams->offset, colors, outfitParams->color, m_center);
-        else {
             if (yPattern == 0)
                 center = outfitParams->dest.center();
-            outfit = new DrawQueueItemOutfitWithShader(outfitParams->dest, outfitParams->texture, outfitParams->src, outfitParams->offset, center, colors, m_shader, m_center);
+
+            DrawQueueItemTexturedRect* outfit =
+                new DrawQueueItemOutfitWithShader(
+                    outfitParams->dest,
+                    outfitParams->texture,
+                    outfitParams->src,
+                    outfitParams->offset,
+                    center,
+                    0,
+                    m_shader,
+                    m_center
+                );
+
+            g_drawQueue->add(outfit);
+            continue;
         }
-        g_drawQueue->add(outfit);
+
+        type->draw(bodyDest, 0, direction, yPattern, zPattern, animationPhase, Color::white, lightView);
+        continue;
     }
+
+    uint32_t colors = m_head + (m_body << 8) + (m_legs << 16) + (m_feet << 24);
+
+    std::shared_ptr<DrawOutfitParams> outfitParams =
+        type->drawOutfit(bodyDest, 1, direction, yPattern, zPattern, animationPhase, Color::white, lightView);
+
+    if (!outfitParams)
+        continue;
+
+    DrawQueueItemTexturedRect* outfit = nullptr;
+
+    if (m_shader.empty()) {
+        outfit = new DrawQueueItemOutfit(
+            outfitParams->dest,
+            outfitParams->texture,
+            outfitParams->src,
+            outfitParams->offset,
+            colors,
+            outfitParams->color,
+            m_center
+        );
+    } else {
+        if (yPattern == 0)
+            center = outfitParams->dest.center();
+
+        outfit = new DrawQueueItemOutfitWithShader(
+            outfitParams->dest,
+            outfitParams->texture,
+            outfitParams->src,
+            outfitParams->offset,
+            center,
+            colors,
+            m_shader,
+            m_center
+        );
+    }
+
+    g_drawQueue->add(outfit);
+}
 
     if (m_wings && (direction == Otc::North || direction == Otc::West)) {
         auto wingsType = g_things.rawGetThingType(m_wings, ThingCategoryCreature);
