@@ -58,6 +58,8 @@ public:
 
     void resetClothes();
     void resetShader() { m_shader = ""; }
+    void setDrawOffset(const Point& offset) { m_drawOffset = offset; }
+    Point getDrawOffset() const { return m_drawOffset; }
 
     int getId() const { return m_id; }
     int getAuxId() const { return m_auxId; }
@@ -113,6 +115,7 @@ struct DrawQueueItemOutfitWithShader : public DrawQueueItemTexturedRect {
     Point m_center;
     int32_t m_colors;
     std::string m_shader;
+    Point m_drawOffset;
     bool m_doCenter;
 };
 
