@@ -81,6 +81,7 @@ private:
     int m_id, m_auxId, m_head, m_body, m_legs, m_feet, m_addons, m_mount = 0, m_wings = 0, m_aura = 0;
     int m_healthBar = 0, m_manaBar = 0;
     std::string m_shader;
+    Point m_drawOffset;
     bool m_center = false;
 };
 
@@ -115,7 +116,6 @@ struct DrawQueueItemOutfitWithShader : public DrawQueueItemTexturedRect {
     Point m_center;
     int32_t m_colors;
     std::string m_shader;
-    Point m_drawOffset;
     bool m_doCenter;
 };
 
