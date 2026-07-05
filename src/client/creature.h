@@ -87,8 +87,8 @@ public:
 
     Point getInformationOffset() { return m_informationOffset; }
     void setInformationOffset(int x, int y) { m_informationOffset = Point(x, y); }
-    Point getCustomDrawOffset() { return m_drawOffset; }
-    void setCustomDrawOffset(int x, int y) { m_drawOffset = Point(x, y); }
+    Point getCustomDrawOffset() { return m_outfit.getDrawOffset(); }
+    void setCustomDrawOffset(int x, int y) { m_outfit.setDrawOffset(Point(x, y)); }
     void setOutfitShader(const std::string& shader) { m_outfit.setShader(shader); }
     std::string getOutfitShader() { return m_outfit.getShader(); }
 
