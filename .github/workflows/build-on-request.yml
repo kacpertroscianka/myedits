@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Workflow version marker
-      run: echo "=== WORKFLOW v10 ==="
+      run: echo "=== WORKFLOW v11 ==="
       shell: cmd
 
     - name: Checkout
@@ -38,12 +38,6 @@ jobs:
         if not exist C:\vcpkg-otc\vcpkg.exe exit /b 1
         .\vcpkg.exe version
 
-    - name: Force v143 toolset in triplet (runner has only VS2022)
-      shell: pwsh
-      run: |
-        Add-Content -Path C:\vcpkg-otc\triplets\community\x86-windows-static.cmake -Value "`r`nset(VCPKG_PLATFORM_TOOLSET v143)"
-        Get-Content C:\vcpkg-otc\triplets\community\x86-windows-static.cmake
-
     - name: Neutralize pkgconfig fixup (dead msys2 mirrors)
       shell: pwsh
       run: |
@@ -66,6 +60,14 @@ jobs:
               Write-Host "No OPTIONS line found in: $p (skipped)"
             }
           }
+        }
+        # openal-soft jako jedyny nie ma PREFER_NINJA i idzie przez generator VS - naprawiamy
+        $f = "C:\vcpkg-otc\ports\openal-soft\portfile.cmake"
+        $c = Get-Content $f -Raw
+        if ($c -notmatch 'PREFER_NINJA') {
+          $c = $c -replace 'vcpkg_configure_cmake\(', "vcpkg_configure_cmake(`n    PREFER_NINJA"
+          Set-Content -Path $f -Value $c
+          Write-Host "Added PREFER_NINJA to openal-soft"
         }
         # twarda weryfikacja najwazniejszego portu
         $check = Get-Content "C:\vcpkg-otc\ports\openal-soft\portfile.cmake" -Raw
